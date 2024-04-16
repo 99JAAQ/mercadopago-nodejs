@@ -7,6 +7,7 @@ export const createOrder = async (req, res) => {
   if (!description || !amount) {
     return res.status(400).json({ message: 'Falta la descripción o el monto en la solicitud.' });
   }
+
   
   mercadopago.configure({
     access_token: MERCADOPAGO_API_KEY,
@@ -17,7 +18,7 @@ export const createOrder = async (req, res) => {
       items: [
         {
           title: description,
-          unit_price: parent(amount),
+          unit_price: Number(amount) ,
           currency_id: "COP",
           quantity: 1,
         },
