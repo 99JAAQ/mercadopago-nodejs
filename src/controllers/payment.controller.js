@@ -1,42 +1,38 @@
-import mercadopage from "mercadopago";
+import mercadopago from "mercadopago";
 import { MERCADOPAGO_API_KEY } from "../config.js";
 
 export const createOrder = async (req, res) => {
-  mercadopage.configure({
+  const { description, amount } = req.body;
+
+  if (!description || !amount) {
+    return res.status(400).json({ message: 'Falta la descripción o el monto en la solicitud.' });
+  }
+  
+  mercadopago.configure({
     access_token: MERCADOPAGO_API_KEY,
   });
 
-  try {
-    const result = await mercadopage.preferences.create({
+   try {
+    const result = await mercadopago.preferences.create({
       items: [
         {
-          title: "Laptop",
-          unit_price: 500,
-          currency_id: "PEN",
+          title: description,
+          unit_price: parent(amount),
+          currency_id: "COP",
           quantity: 1,
         },
-      ],
-      notification_url: "https://e720-190-237-16-208.sa.ngrok.io/webhook",
-      back_urls: {
-        success: "http://localhost:3000/success",
-        // pending: "https://e720-190-237-16-208.sa.ngrok.io/pending",
-        // failure: "https://e720-190-237-16-208.sa.ngrok.io/failure",
-      },
+      ]
     });
 
-    console.log(result);
-
-    // res.json({ message: "Payment creted" });
     res.json(result.body);
   } catch (error) {
-    return res.status(500).json({ message: "Something goes wrong" });
+    return res.status(500).json({ message: error });
   }
 };
 
 export const receiveWebhook = async (req, res) => {
   try {
     const payment = req.query;
-    console.log(payment);
     if (payment.type === "payment") {
       const data = await mercadopage.payment.findById(payment["data.id"]);
       console.log(data);

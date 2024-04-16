@@ -4,7 +4,10 @@ import path from "path";
 
 import paymentRoutes from "./routes/payment.routes.js";
 
+const port = process.env.PORT || 3000;
 const app = express();
+
+app.use(express.json());
 
 app.use(morgan("dev"));
 
@@ -12,5 +15,6 @@ app.use(paymentRoutes);
 
 app.use(express.static(path.resolve("src/public")));
 
-app.listen(3000);
-console.log("Server on port", 3000);
+app.listen(port, () => {
+    console.log(`Servidor corriendo en puerto: ${port}`);
+});

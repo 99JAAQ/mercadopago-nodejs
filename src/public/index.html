@@ -3,18 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Store</title>
+    <title>Pasarela de Pago Mercado Pago</title>
   </head>
   <body>
-    <button id="checkout">Pay</button>
+    <h1>Pasarela de Pago Mercado Pago</h1>
+
+    <form id="payment-form">
+        <label for="description">Descripción:</label><br>
+        <input type="text" id="description" name="description" required><br><br>
+        <label for="amount">Valor (en centavos):</label><br>
+        <input type="number" id="amount" name="amount" required><br><br>
+        <button type="button" id="pay-button">Pagar</button>
+    </form>
+
 
     <script>
-      const checkoutButton = document.getElementById("checkout");
+      const checkoutButton = document.getElementById("pay-button");
 
       checkoutButton.addEventListener("click", async () => {
+        const description = document.getElementById('description').value;
+        const amount = document.getElementById('amount').value;
+
+        const bodyData = {
+            description: description,
+            amount: amount
+        };
+
         const res = await fetch("/create-order", {
           method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(bodyData)
         });
+
         const data = await res.json();
         window.location.href = data.init_point;
       });
